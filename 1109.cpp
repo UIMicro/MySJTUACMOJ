@@ -1,75 +1,72 @@
-﻿#include <iostream>
+#include <iostream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
-int mid_walk(int* data, int i) {
-	int size = 0;
-	if (data[i + 1] == -2147483648) {
-		cout << data[i] << ' ';
-		if (data[i + 2] == -2147483648) {
-			return 3;
-		}
-		else {
-			return 2 + mid_walk(data, i + 2);
-		}
+class node {
+private:
+	node* left;
+	node* right;
+	int value;
+public:
+	node(int n);
+	~node();
+	friend void construct(vector<int>& T, node* n);
+	friend void mid_walk(node* n);
+	friend void back_walk(node* n);
+};
+
+node::node(int n) {
+	value = n;
+	left = NULL;
+	right = NULL;
+}
+
+node::~node() {
+	delete left;
+	delete right;
+}
+
+void construct(vector<int>& T, node* n) {
+	static auto i = T.begin();
+	if (*(++i) != -1) {
+		n->left = new node(*i);
+		construct(T, n->left);
 	}
-	else {
-		size = mid_walk(data, i + 1);
-		cout << data[i] << ' ';
-		if (data[i + size + 1] == -2147483648) {
-			return 2 + size;
-		}
-		else {
-			return 1 + size + mid_walk(data, i + size + 1);
-		}
+	if (*(++i) != -1) {
+		n->right = new node(*i);
+		construct(T, n->right);
 	}
 }
 
-int back_walk(int* data, int i) {
-	int size = 0;
-	if (data[i + 1] == -2147483648) {
-		if (data[i + 2] == -2147483648) {
-			cout << data[i] << ' ';
-			return 3;
-		}
-		else {
-			size = 2 + back_walk(data, i + 2);
-			cout << data[i] << ' ';
-			return size;
-		}
-	}
-	else {
-		size = back_walk(data, i + 1);
-		if (data[i + size + 1] == -2147483648) {
-			cout << data[i] << ' ';
-			return 2 + size;
-		}
-		else {
-			size =  1 + size + back_walk(data, i + size + 1);
-			cout << data[i] << ' ';
-			return size;
-		}
-	}
+void mid_walk(node* n) {
+	if (n->left) mid_walk(n->left);
+	cout << n->value << ' ';
+	if (n->right) mid_walk(n->right);
+}
+
+void back_walk(node* n) {
+	if (n->left) back_walk(n->left);
+	if (n->right) back_walk(n->right);
+	cout << n->value << ' ';
 }
 
 int main() {
-	ios::sync_with_stdio(0);
-	int n[100100];
-	string data;
-	//cin >> (char*)n;
-	int t = 0;
-	while (cin >> data) {
-		if (data.at(0) == '.') {
-			n[t] = -2147483648;
+	vector<int> s;
+	string stmp;
+	while (cin >> stmp) {
+		if (stmp.at(0) == '.') {
+			s.push_back(-1);
 		}
 		else {
-			n[t] = stoi(data);
+			s.push_back(stoi(stmp));
 		}
-		t++;
 	}
-	mid_walk(n, 0);
+	node head(s.at(0));
+	construct(s, &head);
+	mid_walk(&head);
 	cout << '\n';
-	back_walk(n, 0);
+	back_walk(&head);
 	return 0;
 }
