@@ -146,4 +146,5 @@ int main() {
 	delete[] ancestor;
 	delete[] dis_to_root;
 	delete[] answer;
+	delete[] queries;
 }
